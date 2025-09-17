@@ -153,18 +153,18 @@ inputSalary.setAttribute('name', 'salary');
 inputSalary.setAttribute('type', 'number');
 inputSalary.setAttribute('required', '');
 inputSalary.dataset.qa = 'salary';
-labelName.textContent = 'Name:';
+labelName.textContent = 'Name: ';
 labelName.append(inputName);
-labelPosition.textContent = 'Position:';
+labelPosition.textContent = 'Position: ';
 labelPosition.append(inputPosition);
-labelAge.textContent = 'Age:';
+labelAge.textContent = 'Age: ';
 labelAge.append(inputAge);
-labelSalary.textContent = 'Salary:';
+labelSalary.textContent = 'Salary: ';
 labelSalary.append(inputSalary);
 select.setAttribute('name', 'office');
 select.setAttribute('required', '');
 select.dataset.qa = 'office';
-labelSelect.textContent = 'Office:';
+labelSelect.textContent = 'Office: ';
 labelSelect.append(select);
 optionTokyo.textContent = 'Tokyo';
 optionTokyo.setAttribute('value', 'tokyo');
@@ -199,16 +199,19 @@ const form = document.querySelector('form');
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const nameInput = document.querySelector('[name="name"]').value;
-  const position = document.querySelector('[name="position"]').value;
-  const age = document.querySelector('[name="age"]').value;
+  const nameInput = document
+    .querySelector('[name="name"]')
+    .value.trim()
+    .replace(/[^a-zA-Z]/g, '');
+  const position = document.querySelector('[name="position"]').value.trim();
+  const age = document.querySelector('[name="age"]').value.trim();
   const office = document
     .querySelector('[name="office"]')
-    .value.replace('-', ' ')
+    .value.replace(/-/g, ' ')
     .split(' ')
     .map((word) => `${word.charAt(0).toUpperCase() + word.slice(1)}`)
     .join(' ');
-  const salary = document.querySelector('[name="salary"]').value;
+  const salary = document.querySelector('[name="salary"]').value.trim();
   const row = document.createElement('tr');
 
   if (nameInput.length < 4) {
@@ -247,7 +250,7 @@ form.addEventListener('submit', (e) => {
     return;
   }
 
-  if (Number.isNaN(salary) || Number.isFinite(salary)) {
+  if (Number.isNaN(+salary) || !Number.isFinite(+salary)) {
     pushNotification(
       10,
       10,
@@ -286,15 +289,17 @@ table.tBodies[0].addEventListener('dblclick', (e) => {
   }
 
   const inputTd = document.createElement('input');
+
+  inputTd.setAttribute('class', 'cell-input');
+
   const text = td.textContent;
 
-  if (!table.tBodies[0].querySelector('input')) {
-    inputTd.setAttribute('class', 'cell-input');
+  if (!table.tBodies[0].querySelector('.cell-input')) {
     inputTd.setAttribute('name', 'cell-input');
     inputTd.value = text;
-    inputTd.focus();
     td.textContent = '';
     td.append(inputTd);
+    inputTd.focus();
   }
 
   inputTd.addEventListener('blur', () => {
