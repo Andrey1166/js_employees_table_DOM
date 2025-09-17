@@ -8,11 +8,12 @@ const direction = [];
 
 thead.addEventListener('click', (e) => {
   const th = e.target.closest('th');
-  const index = th.cellIndex;
 
   if (!th) {
     return;
   }
+
+  const index = th.cellIndex;
 
   // asc sorted list
   function asc() {
@@ -83,9 +84,9 @@ table.tBodies[0].addEventListener('click', (e) => {
 
   [...table.tBodies[0].rows].forEach((row) => {
     if (row === tr && !row.classList.contains('active')) {
-      row.setAttribute('class', 'active');
+      row.classList.add('active');
     } else {
-      row.removeAttribute('class');
+      row.classList.remove('active');
     }
   });
 });
@@ -110,7 +111,7 @@ const pushNotification = (posTop, posRight, title, description, type) => {
   body.append(div);
 
   setTimeout(() => {
-    div.style.display = 'none';
+    div.remove();
   }, 2000);
 };
 
@@ -135,6 +136,7 @@ const optionSanFrancisco = document.createElement('option');
 const button = document.createElement('button');
 
 formHtml.setAttribute('class', 'new-employee-form');
+formHtml.setAttribute('id', 'form');
 inputName.setAttribute('name', 'name');
 inputName.setAttribute('type', 'text');
 inputName.setAttribute('required', '');
@@ -197,8 +199,6 @@ const form = document.querySelector('form');
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  // const allInputs = new FormData(form);
-
   const nameInput = document.querySelector('[name="name"]').value;
   const position = document.querySelector('[name="position"]').value;
   const age = document.querySelector('[name="age"]').value;
@@ -208,14 +208,14 @@ form.addEventListener('submit', (e) => {
     .split(' ')
     .map((word) => `${word.charAt(0).toUpperCase() + word.slice(1)}`)
     .join(' ');
-  const salary = `$${(document.querySelector('[name="salary"]').value / 1000).toFixed(3).toString().replace('.', ',')}`;
+  const salary = document.querySelector('[name="salary"]').value;
   const row = document.createElement('tr');
 
   if (nameInput.length < 4) {
     pushNotification(
       10,
       10,
-      'error',
+      'Error',
       'Name must be longer than 4 characters!!!',
       'error',
     );
@@ -224,20 +224,52 @@ form.addEventListener('submit', (e) => {
   }
 
   if (+age < 18 || +age > 90) {
-    pushNotification(10, 10, 'error', 'Enter correct age!!!', 'error');
+    pushNotification(
+      10,
+      10,
+      'Error',
+      'Age must be more than 18 and less than 90!!!',
+      'error',
+    );
 
     return;
   }
+
+  if (!position || !office || !salary) {
+    pushNotification(
+      10,
+      10,
+      'Error',
+      'Please fill out all fields with valid values!!!',
+      'error',
+    );
+
+    return;
+  }
+
+  if (Number.isNaN(salary) || Number.isFinite(salary)) {
+    pushNotification(
+      10,
+      10,
+      'Error',
+      'Please fill out salary field with valid value!!!',
+      'error',
+    );
+
+    return;
+  }
+
+  const salaryValid = `$${(salary / 1000).toFixed(3).toString().replace('.', ',')}`;
 
   row.innerHTML = `
   <td>${nameInput}</td>
   <td>${position}</td>
   <td>${office}</td>
   <td>${age}</td>
-  <td>${salary}</td>
+  <td>${salaryValid}</td>
   `;
 
-  pushNotification(10, 10, 'success', 'New employee added', 'success');
+  pushNotification(10, 10, 'Success', 'New employee added', 'success');
 
   tbody.append(row);
 
